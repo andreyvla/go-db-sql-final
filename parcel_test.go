@@ -46,7 +46,7 @@ func TestAddGetDelete(t *testing.T) {
 	err = store.Delete(parcel.Number)
 	require.NoError(t, err)
 	_, err = store.Get(parcel.Number)
-	require.Equal(t, sql.ErrNoRows, err)
+
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 
@@ -63,7 +63,7 @@ func TestSetAddress(t *testing.T) {
 	require.NotEmpty(t, parcel.Number)
 
 	newAddress := "new test address"
-	store.SetAddress(parcel.Number, newAddress)
+
 	err = store.SetAddress(parcel.Number, newAddress)
 	require.NoError(t, err)
 
@@ -130,13 +130,9 @@ func TestGetByClient(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, len(parcels), len(parcelMap))
 	for _, parcel := range storedParcels {
-		for _, parcelInMap := range parcelMap {
-			if parcel == parcelInMap {
-				assert.Equal(t, parcel, parcelInMap)
-				return
-			}
-		}
-
+		_, ok := parcelMap[parcel.Number]
+		require.True(t, ok)
+		require.Equal(t, parcelMap[parcel.Number], parcel)
 	}
 
 }
